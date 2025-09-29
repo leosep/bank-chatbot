@@ -78,7 +78,7 @@ bankbot/
 ### 1. Clonar el repositorio
 ```bash
 git clone https://github.com/leosep/bank-chatbot.git
-cd bancobot
+cd bank-chatbot
 ```
 
 ### 2. Instalar dependencias de Node.js
