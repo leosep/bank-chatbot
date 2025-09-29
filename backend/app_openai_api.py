@@ -134,7 +134,7 @@ def save_session(sender_id, employee_id, is_verified, awaiting_code=False, provi
 
 def verify_employee_identity(cedula, employee_code):
     """
-    Verifica la identidad del empleado contra la base de datos EIKON DWH (SQL Server).
+    Verifica la identidad del empleado contra la base de datos RRHH (SQL Server).
     Devuelve el employee_id si se verifica, None en caso contrario.
     """
     conn = get_db_connection_sql()
@@ -465,14 +465,14 @@ def ask():
             print(f"Error connecting to the call management backend: {e}")
             response_text = "❌ Lo siento, no pude agendar la llamada en este momento.\nPor favor, inténtalo más tarde."
             category = "Agendar Llamada - Error"
-    elif "ayuda sistema" in lower_q or "ayuda eikon" in lower_q:
+    elif "ayuda sistema" in lower_q or "ayuda rrhh" in lower_q:
         response_text = "🖥️ Ayuda con Sistema Interno\n\nPuedes consultar los instructivos o enlaces proporcionados.\nSi aún necesitas asistencia, podemos agendar una llamada."
         category = "Sistema Interno Help"
     elif "comprobante de pagos" in lower_q:
         response_text = "📄 Comprobante de Pagos\n\nPuedes ver tus comprobantes en Sistema Interno > Mis Pagos."
         category = "Comprobante de Pagos"
     elif "prestaciones" in lower_q:
-        response_text = "🎁 Prestaciones\n\nPara información, completa el formulario con:\n- Nombre\n- Cédula\n- Teléfono\n- Código EIKON\n\nEsto nos ayudará a asistirte adecuadamente."
+        response_text = "🎁 Prestaciones\n\nPara información, completa el formulario con:\n- Nombre\n- Cédula\n- Teléfono\n- Código RRHH\n\nEsto nos ayudará a asistirte adecuadamente."
         category = "Prestaciones"
     else:
         context = search_similar_chunks(q)
