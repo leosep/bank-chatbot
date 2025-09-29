@@ -1,4 +1,4 @@
-# BancoBot
+# BankBot
 
 This project is a complete WhatsApp chatbot system developed for bank employees, including an automated bot, a Python backend API, and a web portal for agents.
 
