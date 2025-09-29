@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="content-wrapper dashboard-container">
+    <h2>👋 ¡Bienvenido, {{ username }}!</h2>
+    <p>Este es tu panel de control para gestionar las solicitudes del chatbot.</p>
+
+    <div class="dashboard-grid">
+        <a href="{{ url_for('call_manager') }}" class="dashboard-card calls-card">
+            <h3>📞 Gestionar Llamadas</h3>
+            <p>Ve y gestiona las solicitudes de llamadas agendadas por los usuarios.</p>
+        </a>
+
+        <a href="{{ url_for('log_viewer') }}" class="dashboard-card logs-card">
+            <h3>📊 Ver Registros</h3>
+            <p>Revisa el historial de conversaciones y las métricas de uso del chatbot.</p>
+        </a>
+    </div>
+
+    <div class="tip-section">
+        <h3>💡 Consejo del día</h3>
+        <p>Revisa la sección de "Gestionar Llamadas" al inicio de tu turno para asegurarte de que ninguna solicitud de contacto se quede sin atender.</p>
+    </div>
+</div>
+{% endblock %}

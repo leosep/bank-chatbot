@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Ver Registros{% endblock %}
+{% block content %}
+<div class="content-wrapper">
+    <h2>📊 Registro de Solicitudes</h2>
+
+    <div class="log-search-bar">
+        <form action="{{ url_for('log_viewer') }}" method="GET">
+            <input type="text" name="q" placeholder="Buscar por usuario, pregunta o categoría..." value="{{ search_query }}">
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
+    <div class="log-list">
+        {% for log in logs %}
+        <div class="log-entry">
+            <div class="log-header">
+                <p><strong>Usuario:</strong> {{ log.sender_id }}</p>
+                <p><strong>Fecha:</strong> {{ log.timestamp }}</p>
+            </div>
+            <div class="log-body">
+                <p><strong>Pregunta:</strong> {{ log.question }}</p>
+                <p><strong>Respuesta:</strong> {{ log.answer }}</p>
+            </div>
+            <div class="log-footer">
+                <span class="log-category">{{ log.category }}</span>
+                {% if log.employee_id %}
+                <span class="employee-id-badge">Empleado ID: {{ log.employee_id }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <p class="no-logs">No se encontraron registros que coincidan con la búsqueda.</p>
+        {% endfor %}
+    </div>
+
+    {% if logs %}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('log_viewer', page=page-1, q=search_query) }}" class="page-link">&laquo; Anterior</a>
+        {% else %}
+        <span class="page-link disabled">&laquo; Anterior</span>
+        {% endif %}
+
+        <span>Página {{ page }} de {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('log_viewer', page=page+1, q=search_query) }}" class="page-link">Siguiente &raquo;</a>
+        {% else %}
+        <span class="page-link disabled">Siguiente &raquo;</span>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

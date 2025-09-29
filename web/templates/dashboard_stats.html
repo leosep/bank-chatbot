@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Estadísticas del Dashboard{% endblock %}
+{% block content %}
+<div class="content-wrapper">
+    <h2>📈 Dashboard de Estadísticas</h2>
+
+    <div class="filter-section">
+        <form id="stats-filter-form">
+            <div class="filter-group">
+                <label for="filter-type">Filtrar por:</label>
+                <select id="filter-type" name="filter">
+                    <option value="daily">Hoy</option>
+                    <option value="weekly">Últimos 7 días</option>
+                    <option value="monthly">Últimos 30 días</option>
+                    <option value="custom">Rango de fechas</option>
+                </select>
+            </div>
+            <div class="filter-group custom-date-range" style="display: none;">
+                <label for="start-date">Desde:</label>
+                <input type="date" id="start-date" name="start_date">
+                <label for="end-date">Hasta:</label>
+                <input type="date" id="end-date" name="end_date">
+            </div>
+            <button type="submit">Aplicar Filtros</button>
+        </form>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stats-card total-calls">
+            <h3>Total de Llamadas</h3>
+            <p id="total-calls-metric">0</p>
+        </div>
+        <div class="stats-card total-logs">
+            <h3>Total de Registros</h3>
+            <p id="total-logs-metric">0</p>
+        </div>
+        <div class="stats-card avg-resolution-time">
+            <h3>Tiempo Promedio de Resolución</h3>
+            <p id="avg-resolution-metric">0s</p>
+        </div>
+    </div>
+
+    <div class="charts-container">
+        <div class="chart-card">
+            <h3>Estado de Llamadas</h3>
+            <canvas id="callStatusChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Conversaciones por Categoría</h3>
+            <canvas id="logCategoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterForm = document.getElementById('stats-filter-form');
+        const filterType = document.getElementById('filter-type');
+        const customDateRange = document.querySelector('.custom-date-range');
+        
+        filterType.addEventListener('change', () => {
+            if (filterType.value === 'custom') {
+                customDateRange.style.display = 'flex';
+            } else {
+                customDateRange.style.display = 'none';
+            }
+        });
+
+        const fetchAndRenderStats = async () => {
+            const formData = new FormData(filterForm);
+            const params = new URLSearchParams(formData).toString();
+            const response = await fetch(`/dashboard/statsdata?${params}`);
+            const data = await response.json();
+            
+            // Update metric cards
+            document.getElementById('total-calls-metric').textContent = data.total_calls;
+            document.getElementById('total-logs-metric').textContent = data.total_logs;
+            document.getElementById('avg-resolution-metric').textContent = `${Math.round(data.avg_resolution_time_seconds)}s`;
+
+            // Render charts
+            renderCallStatusChart(data.call_status_data, data.call_status_labels);
+            renderLogCategoryChart(data.log_category_data, data.log_category_labels);
+        };
+        
+        filterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            fetchAndRenderStats();
+        });
+
+        // Initial render
+        fetchAndRenderStats();
+
+        let callStatusChartInstance = null;
+        let logCategoryChartInstance = null;
+
+        const renderCallStatusChart = (data, labels) => {
+            if (callStatusChartInstance) {
+                callStatusChartInstance.destroy();
+            }
+            const ctx = document.getElementById('callStatusChart').getContext('2d');
+            callStatusChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['#f39c12', '#3498db', '#2ecc71']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución de Llamadas por Estado'
+                        }
+                    }
+                }
+            });
+        };
+
+        const renderLogCategoryChart = (data, labels) => {
+            if (logCategoryChartInstance) {
+                logCategoryChartInstance.destroy();
+            }
+            const ctx = document.getElementById('logCategoryChart').getContext('2d');
+            logCategoryChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Número de Conversaciones',
+                        data: data,
+                        backgroundColor: '#8e44ad',
+                        borderColor: '#732d8c',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Conversaciones por Categoría'
+                        }
+                    }
+                }
+            });
+        };
+    });
+</script>
+{% endblock %}

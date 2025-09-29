@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Gestionar Llamadas{% endblock %}
+{% block content %}
+<div class="content-wrapper">
+    <h2>📞 Gestión de Llamadas Pendientes</h2>
+
+    <div class="call-filters">
+        <form action="{{ url_for('call_manager') }}" method="GET">
+            <input type="text" name="q" placeholder="Buscar por nombre, teléfono, ID..." value="{{ search_query }}">
+            <select name="status">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Todos</option>
+                <option value="Pending" {% if status_filter == 'pending' %}selected{% endif %}>Pendientes</option>
+                <option value="In Progress" {% if status_filter == 'in progress' %}selected{% endif %}>En Progreso</option>
+                <option value="Resolved" {% if status_filter == 'resolved' %}selected{% endif %}>Resueltas</option>
+            </select>
+            <button type="submit">Filtrar</button>
+        </form>
+    </div>
+
+    <div class="call-list">
+        {% for call in calls %}
+        <div class="call-card {{ call.status.lower().replace(' ', '-') }}">
+            <div class="call-header">
+                <h3>Llamada de {{ call.full_name }}</h3>
+                <span class="status-badge">{{ call.status }}</span>
+            </div>
+            <div class="call-body">
+                <p><strong>ID de Usuario:</strong> {{ call.sender_id }}</p>
+                <p><strong>Teléfono:</strong> {{ call.phone }}</p>
+                <p><strong>Hora Preferida:</strong> {{ call.preferred_time }}</p>
+                <p><strong>Solicitado:</strong> {{ call.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                {% if call.resolution %}
+                <p class="resolution-text"><strong>Resolución:</strong> {{ call.resolution }}</p>
+                {% endif %}
+            </div>
+            <div class="call-actions">
+                <form action="{{ url_for('update_call_status', call_id=call.id, q=search_query, status=status_filter) }}" method="post">
+                    <div><label for="status-{{ call.id }}">Cambiar Estado:</label>
+                    <select name="status" id="status-{{ call.id }}" onchange="this.form.submit()">
+                        <option value="Pending" {% if call.status == 'Pending' %}selected{% endif %}>Pendiente</option>
+                        <option value="In Progress" {% if call.status == 'In Progress' %}selected{% endif %}>En Progreso</option>
+                        <option value="Resolved" {% if call.status == 'Resolved' %}selected{% endif %}>Resuelto</option>
+                    </select></div><br /><br />
+                    <div><textarea name="resolution" placeholder="Digitar resolución...">{{ call.resolution }}</textarea></div><br /><br />
+                    <div><button type="submit">Guardar Resolución</button></div>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <p class="no-calls">🎉 ¡No hay llamadas que coincidan con los filtros!</p>
+        {% endfor %}
+    </div>
+
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('call_manager', page=page-1, q=search_query, status=status_filter) }}" class="page-link">&laquo; Anterior</a>
+        {% else %}
+        <span class="page-link disabled">&laquo; Anterior</span>
+        {% endif %}
+        
+        <span>Página {{ page }} de {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('call_manager', page=page+1, q=search_query, status=status_filter) }}" class="page-link">Siguiente &raquo;</a>
+        {% else %}
+        <span class="page-link disabled">Siguiente &raquo;</span>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

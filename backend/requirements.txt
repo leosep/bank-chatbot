@@ -1,0 +1,10 @@
+Flask==3.0.3
+requests==2.32.3
+PyMuPDF==1.24.1  # fitz
+faiss-cpu==1.8.0
+numpy==1.26.4
+sentence-transformers==2.7.0
+openai==1.35.1
+python-dotenv==1.0.1  # Para manejar la variable de entorno OPENAI_API_KEY
+pyodbc==5.1.0
+python-dateutil
