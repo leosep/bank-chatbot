@@ -1,4 +1,4 @@
-# BancoBot
+# BankBot
 
 Este proyecto es un sistema completo de chatbot para WhatsApp desarrollado para empleados de banco, que incluye un bot automatizado, una API backend en Python y un portal web para agentes.
 
@@ -77,7 +77,7 @@ bankbot/
 
 ### 1. Clonar el repositorio
 ```bash
-git clone <repository-url>
+git clone https://github.com/leosep/bank-chatbot.git
 cd bancobot
 ```
 
